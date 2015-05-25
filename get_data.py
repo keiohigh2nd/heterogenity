@@ -25,6 +25,7 @@ def read_gene_from_file(filename):
 def get_gene_map(gene_name, i_val, G, threshold):
   print gene_name
   if float(i_val) < float(threshold):
+    print 'Too weak edge' 
     return 1
 
   url='http://www.pathwaycommons.org/pc2/graph?source=%s&kind=neighborhood&format=BINARY_SIF'%gene_name
@@ -57,7 +58,7 @@ def make_map(gene_list, val, name, G, threshold):
   #data = json_graph.node_link_data(G)
   #json.dump(data, open('result/%s_graph.json'%name,'w'))
 
-  nx.write_dot(G,'result/full/%s_graph.dot'% (threshold + name))
+  nx.write_dot(G,'result/full/%s_graph.dot'% (str(threshold) + name))
 
 def sample(G):
   ex_name = 'BGN'
@@ -77,9 +78,9 @@ if __name__ == "__main__":
   G_mix2 = nx.DiGraph()
   G_231 = nx.DiGraph()
 
-  make_map(gene_list, c1937, '1937', G_1937, threshold)
-  make_map(gene_list, cmix1, 'mix1', G_mix1, threshold)
-  make_map(gene_list, cmix2, 'mix2', G_mix2, threshold)
+  #make_map(gene_list, c1937, '1937', G_1937, threshold)
+  #make_map(gene_list, cmix1, 'mix1', G_mix1, threshold)
+  #make_map(gene_list, cmix2, 'mix2', G_mix2, threshold)
   make_map(gene_list, c231, '231', G_231, threshold)
 
   print 'Finish' 

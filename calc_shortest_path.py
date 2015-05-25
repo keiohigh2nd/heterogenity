@@ -76,35 +76,61 @@ def write_diff(f, gene):
     f.write(gene[1])
     f.write('\t')
 
-def calc_shortest_path(G1, G2, G3, G4, combs, threshold):
-  f = open('shortest_path', 'w')
+def write_paths(f, Ga_paths, Gb_paths):
+  for path in Ga_paths:
+    f.write(path)
+    f.write('\t')
+  f.write('---')
+  f.write('\t')
+  for path in Gb_paths:
+    f.write(path)
+    f.write('\t')
 
+def calc_shortest_path(G1, G2, G3, G4, combs, threshold):
+  f = open('result/shortest_path', 'w')
+  f_bl = open('result/blocked_path', 'w')
   for comb in combs:
     num_path = []
     try:
       num_path.append(len(nx.shortest_path(G1, comb[0], comb[1])))
       num_path.append(len(nx.shortest_path(G2, comb[0], comb[1])))
-      num_path.append(len(nx.shortest_path(G3, comb[0], comb[1])))
-      num_path.append(len(nx.shortest_path(G4, comb[0], comb[1])))
+
+      G3_paths = nx.shortest_path(G3, comb[0], comb[1])
+      G4_paths = nx.shortest_path(G4, comb[0], comb[1])
+
+      num_path.append(len(G3_paths))
+      num_path.append(len(G4_paths))
       if num_path[0] != num_path[1] or num_path[1] != num_path[3]:
+        print num_path
+        f.write('Alternative Path')
+        f.write('\t')
         write_diff(f, comb)
-        print 'Alternative path'
+        f.write('---')
+        f.write('\t')
+        write_paths(f, G3_paths, G4_paths)
+        f.write('\n')
+
 
     except:
-      #print 'Not found between %s and %s'% (comb[0], comb[1])
+      print 'Not found between %s and %s'% (comb[0], comb[1])
       if len(num_path) >= 1:
-        print 'Block path'
-        write_diff(f, comb)
+        f_bl.write('Blocked Path')
+        f_bl.write('\t')
+        write_diff(f_bl, comb)
+        f_bl.write('\n')
+
+  f.close()
+  f_bl.close()
   return 1
 
 if __name__ == "__main__":
   
   filename = 'data/short_hetero.csv' 
 
-  G_1937 = nx.read_dot('result/short_hetero_dot/1937_graph.dot')
-  G_mix1 = nx.read_dot('result/short_hetero_dot/mix1_graph.dot')
-  G_mix2 = nx.read_dot('result/short_hetero_dot/mix2_graph.dot')
-  G_231 = nx.read_dot('result/short_hetero_dot/231_graph.dot')
+  G_1937 = nx.read_dot('result/threshold_3_maps/31937_graph.dot')
+  G_mix1 = nx.read_dot('result/threshold_3_maps//3mix1_graph.dot')
+  G_mix2 = nx.read_dot('result/threshold_3_maps/3mix2_graph.dot')
+  G_231 = nx.read_dot('result/threshold_3_maps/3231_graph.dot')
    
   gene_list = read_gene_list(filename)
   combs = genes_combinations(gene_list)
